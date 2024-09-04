@@ -50,6 +50,10 @@ DMA_HandleTypeDef hdma_uart4_rx;
 uint8_t uartRxBuffer;
 uint8_t spiRxBuffer[3];
 volatile uint8_t dataReceived = 0;
+volatile uint8_t light1State;
+volatile uint8_t light2State;
+volatile uint8_t light3State;
+volatile uint8_t light4State;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -301,26 +305,63 @@ void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef *hspi)
 		if(strcmp((char *)spiRxBuffer, "L1") == 0)
 		{
 			HAL_GPIO_TogglePin(Touch_LED_1_GPIO_Port, Touch_LED_1_Pin);
-			uint8_t uartTxData = 'A';
-			HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+			uint8_t Newlight1_state = (light1State == 0 ) ? 1 : 0;
+			if(Newlight1_state != light1State){
+				light1State = Newlight1_state;
+				if(light1State == 1){
+					uint8_t uartTxData = 'A';
+					HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+				}else{
+					uint8_t uartTxData = 'B';
+					HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+				}
+			}
+
 		}
 		else if(strcmp((char *)spiRxBuffer, "L2") == 0)
 		{
 			HAL_GPIO_TogglePin(Touch_LED_2_GPIO_Port, Touch_LED_2_Pin);
-			uint8_t uartTxData = 'B';
-			HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+		    uint8_t Newlight2_state = (light2State == 0) ? 1: 0;
+		    if(Newlight2_state != light2State){
+		    	light2State = Newlight2_state;
+		    	if(light2State == 1){
+		    		uint8_t uartTxData = 'C';
+		    		HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+		    	}else{
+		    		uint8_t uartTxData = 'D';
+		    	    HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+		    	}
+		    }
 		}
 		else if(strcmp((char *)spiRxBuffer, "L3") == 0)
 		{
 			HAL_GPIO_TogglePin(Touch_LED_3_GPIO_Port, Touch_LED_3_Pin);
-			uint8_t uartTxData = 'C';
-			HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+			uint8_t Newlight3_state = (light3State == 0) ? 1 : 0;
+			if(Newlight3_state != light3State){
+				light3State = Newlight3_state;
+				if(light3State == 1){
+					uint8_t uartTxData = 'E';
+					HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+				}else{
+					uint8_t uartTxData = 'F';
+				    HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+				}
+			}
 		}
 		else if(strcmp((char *)spiRxBuffer, "L4") == 0)
 		{
 			HAL_GPIO_TogglePin(Touch_LED_4_GPIO_Port, Touch_LED_4_Pin);
-			uint8_t uartTxData = 'D';
-			HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+			uint8_t Newlight4_state = (light4State == 0) ? 1 : 0;
+			if(Newlight4_state != light4State){
+				light4State = Newlight4_state;
+		        if(light4State == 1){
+		        	uint8_t uartTxData = 'G';
+		        	HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+		        }else{
+		        	uint8_t uartTxData = 'H';
+		        	HAL_UART_Transmit(&huart4, &uartTxData, 1, 10);
+		        }
+			}
 		}
 		if (HAL_SPI_Receive_IT(hspi, spiRxBuffer, sizeof(spiRxBuffer) - 1) != HAL_OK)
 		{
@@ -333,44 +374,52 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	if(huart->Instance == UART4){
 
         if (uartRxBuffer == 'L') {
-        	HAL_GPIO_TogglePin(Touch_LED_1_GPIO_Port, Touch_LED_1_Pin);
-            /*if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
+        	//HAL_GPIO_TogglePin(Touch_LED_1_GPIO_Port, Touch_LED_1_Pin);
+            if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
                 if (uartRxBuffer == '1') {
                     HAL_GPIO_WritePin(Touch_LED_1_GPIO_Port, Touch_LED_1_Pin, GPIO_PIN_SET);    // light1_ON()
+                    light1State = 1;
                 } else if (uartRxBuffer == '0') {
                     HAL_GPIO_WritePin(Touch_LED_1_GPIO_Port, Touch_LED_1_Pin, GPIO_PIN_RESET);  // light1_OFF()
+                    light1State = 0;
                 }
-            }*/
+            }
         }
         else if (uartRxBuffer == 'M') {
-        	HAL_GPIO_TogglePin(Touch_LED_2_GPIO_Port, Touch_LED_2_Pin);
-            /*if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
+        	//HAL_GPIO_TogglePin(Touch_LED_2_GPIO_Port, Touch_LED_2_Pin);
+            if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
                 if (uartRxBuffer == '1') {
                     HAL_GPIO_WritePin(Touch_LED_2_GPIO_Port, Touch_LED_2_Pin, GPIO_PIN_SET);    // light2_ON()
+                    light2State = 1;
                 } else if (uartRxBuffer == '0') {
                     HAL_GPIO_WritePin(Touch_LED_2_GPIO_Port, Touch_LED_2_Pin, GPIO_PIN_RESET);  // light2_OFF()
+                    light2State = 0;
                 }
-            }*/
+            }
         }
         else if (uartRxBuffer == 'N') {
-        	HAL_GPIO_TogglePin(Touch_LED_3_GPIO_Port, Touch_LED_3_Pin);
-            /*if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
+        	//HAL_GPIO_TogglePin(Touch_LED_3_GPIO_Port, Touch_LED_3_Pin);
+            if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
                 if (uartRxBuffer == '1') {
                     HAL_GPIO_WritePin(Touch_LED_3_GPIO_Port, Touch_LED_3_Pin, GPIO_PIN_SET);                      // light3_ON()
+                    light3State = 1;
                 } else if (uartRxBuffer == '0') {
                     HAL_GPIO_WritePin(Touch_LED_3_GPIO_Port, Touch_LED_3_Pin, GPIO_PIN_RESET);                    // light3_OFF()
+                    light3State = 0;
                 }
-            }*/
+            }
         }
         else if (uartRxBuffer == 'O') {
-        	HAL_GPIO_TogglePin(Touch_LED_4_GPIO_Port, Touch_LED_4_Pin);
-           /* if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
+        	//HAL_GPIO_TogglePin(Touch_LED_4_GPIO_Port, Touch_LED_4_Pin);
+            if (HAL_UART_Receive(&huart4, &uartRxBuffer, 1, 10) == HAL_OK) {
                 if (uartRxBuffer == '1') {
                     HAL_GPIO_WritePin(Touch_LED_4_GPIO_Port, Touch_LED_4_Pin, GPIO_PIN_SET);  // light4_ON()
+                    light4State = 1;
                 } else if (uartRxBuffer == '0') {
                     HAL_GPIO_WritePin(Touch_LED_4_GPIO_Port, Touch_LED_4_Pin, GPIO_PIN_RESET);  // light4_OFF()
+                    light4State = 0;
                 }
-            }*/
+            }
         }
         HAL_UART_Receive_IT(&huart4, &uartRxBuffer, 1);
 	}
